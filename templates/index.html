@@ -9168,6 +9168,9 @@
 
     {% raw %}
     <style>
+        .container {
+            max-width: 1600px !important;
+        }
         .btn-file {
             position: relative;
             overflow: hidden;
@@ -9228,18 +9231,12 @@
                             <label for="text">Textarea</label>
                         </div>
                         <div class="row">
-                            <div class="col s4">
-                                <button class="waves-effect waves-light btn center" name="paste" type="submit"
-                                    title="Paste text to this input area">Paste</button>
-                            </div>
-                            <div class="col s4">
-                                <button class="waves-effect waves-light btn center" name="save_text" type="submit"
-                                    title="Save pasted text as a file available for download">Save text</button>
-                            </div>
-                            <div class="col s4">
-                                <button class="waves-effect waves-light btn center" name="save_b64" type="submit"
-                                    title="Save a base64-encoded blob as a file available for download">Save B64 file</button>
-                            </div>
+                            <button class="waves-effect waves-light btn center blue" name="paste" type="submit"
+                                title="Paste text to this input area"><i class="material-icons left">content_paste</i>Paste Clipboard</button>
+                            <button class="waves-effect waves-light btn center green" name="save_text" type="submit"
+                                title="Save pasted text as a file available for download"><i class="material-icons left">feed</i>Save as Text</button>
+                            <button class="waves-effect waves-light btn center teal" name="save_b64" type="submit"
+                                title="Save a base64-encoded blob as a file available for download"><i class="material-icons left">data_object</i>Save as B64</button>
                         </div>
                     </form>
                 </div>
@@ -9287,9 +9284,9 @@
                 <tr s>
                     <td>{{ loop.index }}</td>
                     <td>{{ file[0] }}</td>
-                    <td><a class="btn btn-floating waves-effect" href="{{ file[1] }}" download> <i class="material-icons">download</i></a></td>
-                    <td><a class="btn btn-floating waves-effect" href="{{ file[1] }}"><i class="material-icons">visibility</i></a></td>
-                    <td><a class="btn btn-floating waves-effect" href="./b64/{{ file[0] }}"> <i class="material-icons">code</i></a></td>
+                    <td><a class="btn btn-floating waves-effect blue" href="{{ file[1] }}" download> <i class="material-icons">download</i></a></td>
+                    <td><a class="btn btn-floating waves-effect red" href="{{ file[1] }}"><i class="material-icons">visibility</i></a></td>
+                    <td><a class="btn btn-floating waves-effect green" href="./b64/{{ file[0] }}"> <i class="material-icons">code</i></a></td>
                     <td>{{ file[2] }}</td>
                     <td>{{ file[3] }}</td>
                     <td>{{ file[4] }}</td>
@@ -9316,47 +9313,41 @@
         <div id="help">
             <h3>Helpers</h3>
             <pre>
-            # ~/.bashrc functions
-            export COPYPASTA="{{ host }}"
+# ~/.bashrc functions 
+export COPYPASTA="{{ host }}"
 
+copy () {
+    curl $COPYPASTA/clipboard -s | xclip -selection clipboard
+}
 
-            copy () {
-                curl $COPYPASTA/clipboard -s | xclip -selection clipboard
-            }
+paste () {
+    local input=""
+    if [[ -p /dev/stdin ]]; then
+        input="$(cat -)"
+    else
+        input="${@}"
+    fi
+    curl -F text="$input" $COPYPASTA
+}
 
+upload () {
+    curl -F upload=@"$1" $COPYPASTA -s
+    echo "[*] Uploaded $1 to $COPYPASTA."
+}
 
-            paste () {
-                local input=""
+download () {
+    curl $COPYPASTA/$1 -L -o $2
+}
 
-                if [[ -p /dev/stdin ]]; then
-                    input="$(cat -)"
-                else
-                    input="${@}"
-                fi
+downloads () {
+    if [ "$1" = "-a" ] || [ "$1" = "--all" ]; then
+        DETAILS="true"
+    else
+        DETAILS="false"
+    fi
+    curl $COPYPASTA/list?details=$DETAILS
+}
 
-                curl -F text="$input" $COPYPASTA
-            }
-
-
-            upload () {
-                curl -F upload=@"$1" $COPYPASTA -s
-                echo "[*] Uploaded $1 to $COPYPASTA."
-            }
-
-
-            download () {
-                curl $COPYPASTA/$1 -L -o $2
-            }
-
-
-            downloads () {
-                if [ "$1" = "-a" ] || [ "$1" = "--all" ]; then
-                    DETAILS="true"
-                else
-                    DETAILS="false"
-                fi
-                curl $COPYPASTA/list?details=$DETAILS
-            }
             </pre>
         </div>
 
@@ -9364,17 +9355,6 @@
     
 
     </div>
-
-
-    <!-- <div id="action-btn" class="fixed-action-btn">
-        <a class="btn-floating btn-large red">
-            <i class="large material-icons">add</i>
-        </a>
-        <ul>
-            <li><a data-target="add-text" class="modal-trigger btn-floating green"><i class="material-icons">note_alt</i></a></li>
-            <li><a data-target="upload" class="modal-trigger btn-floating blue"><i class="material-icons">attach_file</i></a></li>
-        </ul>
-    </div> -->
 
     <!--JavaScript at end of body for optimized loading-->
     <script type="text/javascript">
