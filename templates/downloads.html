@@ -1,0 +1,13 @@
+{% for file in files %}
+[{{ '%2s'|format(loop.index) -}}
+] {{ file[0] -}}
+{% if details -%}
+{{ ' ' * (max_length + 1 - file[0]|length) -}}
+{{ host -}}
+{{ file[1][1:] -}}
+{{ ' ' * (max_length + 1 - file[0]|length) -}}
+{{ '%4s'|format(file[2]) -}}
+{{ ' ' }}{{ file[3]|replace(' ', '', 2) -}}
+{{ ' ' }}{{ file[4] -}}
+{% endif -%}
+{% endfor %}
