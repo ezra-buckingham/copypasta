@@ -15,6 +15,7 @@ web.config.debug = False
 urls = ('/b64/.*$', 'B64',                  # For accessing base64-encoded versions of files
         '/clipboard', 'Clipboard',          # For getting the text on the "clipboard"
         '/list$', 'List',                   # To list files available for download
+        '/remove/.*$', 'Remove',            # Remove a given file
         '/[0-9]{1,}$', 'DownloadShortcut',  # For downloading files by index number shortcut
         '.*$', 'Index')                     # Main page
 
@@ -27,7 +28,6 @@ def get_main_template():
 def get_downloads_template():
     downloads_template = Path('templates/downloads.html').read_text()
     return downloads_template
-
 
 def get_static_files():
     """Build a list of lists, with each item in the list representing a file in the ./static directory.
@@ -111,6 +111,14 @@ class DownloadShortcut:
         else:
             raise web.seeother('./static/' + files[file_index - 1][0])
 
+class Remove:
+    """Remove a given file from the server."""
+    def GET(self):
+        file = web.ctx.env['PATH_INFO'].split('/')[-1]
+        if file in os.listdir('./static'):
+            os.remove('./static/' + file)
+        raise web.seeother('/')
+
 
 class Index:
     """Handle all GET and POST requests other than those directed at /b64.
@@ -120,41 +128,14 @@ class Index:
     def GET(self):
         if not web.ctx.env['PATH_INFO'] == '/':
             raise web.seeother('/')
-        
         host = web.ctx.env['HTTP_HOST']
-        download_icon = """
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16" title="Download">
-                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                  <title>Download</title>
-                </svg>
-                """
-        preview_icon = """
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eyeglasses" viewBox="0 0 16 16">
-                  <path d="M4 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm2.625.547a3 3 0 0 0-5.584.953H.5a.5.5 0 0 0 0 1h.541A3 3 0 0 0 7 8a1 1 0 0 1 2 0 3 3 0 0 0 5.959.5h.541a.5.5 0 0 0 0-1h-.541a3 3 0 0 0-5.584-.953A1.993 1.993 0 0 0 8 6c-.532 0-1.016.208-1.375.547zM14 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>
-                  <title>Preview</title>
-                </svg>
-                """
-        to_b64_icon = """
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-code" viewBox="0 0 16 16">
-                  <path d="M6.646 5.646a.5.5 0 1 1 .708.708L5.707 8l1.647 1.646a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708l2-2zm2.708 0a.5.5 0 1 0-.708.708L10.293 8 8.646 9.646a.5.5 0 0 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2z"/>
-                  <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
-                  <title>Convert to Base64</title>
-                </svg>
-                """
 
         # Use a file in case app crashes, last pasted input remains
         with open('clipboard', 'r') as f:
             text = f.read()
         downloads = get_static_files()
         template = Environment(loader=BaseLoader).from_string(get_main_template())
-        
-        return template.render(text=text,
-                               host=host,
-                               downloads=downloads,
-                               download_icon=download_icon,
-                               preview_icon=preview_icon,
-                               to_b64_icon=to_b64_icon)
+        return template.render(text=text, host=host, downloads=downloads)
 
     def POST(self):
         # If user wants to simply paste text to the "clipboard"
