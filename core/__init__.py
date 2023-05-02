@@ -16,6 +16,9 @@ def get_files(path: Path):
     files = []
     
     for file in path.glob('*'):
+        # If a directory, move on
+        if Path(file).is_dir(): continue
+        
         # Pretty print the size
         size = file.lstat().st_size
         size = sizeof_fmt(size)
