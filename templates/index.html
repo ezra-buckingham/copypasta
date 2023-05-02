@@ -15,53 +15,37 @@
 
     {% raw %}
     <style>
-    .btn-file input[type="file"] {
-        position: absolute;
-        top: 0;
-        right: 0;
-        min-width: 100%;
-        min-height: 100%;
-        font-size: 100px;
-        text-align: right;
-        filter: alpha(opacity=0);
-        opacity: 0;
-        outline: none;
-        outline-color: currentcolor;
-        background: white;
-        background-color: white;
-        background-image: none;
-        cursor: pointer;
-        display: block;
-    }
+        html {
+            background-color: #2b2d2d;
+            color: #FFFFFF;
+        }
+        .container {
+            max-width: 1600px !important;
+        }
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: pointer;
+            display: block;
+        }
 
-    .container {
-        max-width: 1600px !important;
-    }
-
-    table.striped>tbody>tr:nth-child(odd) {
-        background-color: rgba(46, 50, 50, 255)
-    }
-
-    .delete-all {
-        margin-top: 10px;
-    }
-
-    .modal-footer > .btn {
-        margin: 0 10px 0 10px !important;
-    }
-
-    .modal-footer {
-        border-top: 1px solid rgba(0,0,0,0.1);
-        border-top-color: rgba(0, 0, 0, 0.1);
-        position: absolute;
-        bottom: 0;
-        padding: 10px !important;
-    }
 
     </style>
-    {% endraw %}
-
-</head>
+    </head>
 
 <body>
     <nav class="nav-extended red">
@@ -115,7 +99,9 @@
 
         <div id="files">
             <h2>Files</h2>
+
             {% if files %}
+
             <table class="striped highlight responsive-table">
                 <thead>
                     <tr>
@@ -141,7 +127,19 @@
                     <td class="center"><a class="btn btn-floating waves-effect red" href="delete/{{ file[0] }}" onclick="return confirm('Remove {{ file[0] }}?')"><i class="material-icons">delete_forever</i></a></td>
                 </tr>
                 {% endfor %}
+                <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><button class="waves-effect waves-light btn red" type="submit" onclick="return confirm('Are you sure you want to delete the selected files?')">Delete Files</button></td>
+                </tr>
             </table>
+
             <div class="row delete-all">
                 <div class="col s12">
                     <a href="/deleteall" class="btn waves-effect red right" onclick="return confirm('Are you sure you want to delete all files?')">
@@ -149,7 +147,11 @@
                     </a>
                 </div>
             </div>
+
+             
+   
             {% endif %}
+             
         </div>
 
         <div id="functions">
@@ -159,6 +161,8 @@
             <h4>Curl Upload</h4>
             <pre>curl -F text="your text here" {{ host }}/upload/text</pre>
             <pre>curl -F text="$(cat file.txt)" {{ host }}/upload/text</pre>
+			<pre>curl -F upload=@"filename" {{ host }}</pre>
+
 
             <h4>Curl Download</h4>
             <pre>curl {{ host }}/get/<filename> -L -o &lt;filename&gt;</pre>
@@ -218,6 +222,7 @@ downloads () {
 
 
     <!--JavaScript at end of body for optimized loading-->
+
     <script type="text/javascript" src="assets/materialize/js/materialize.min.js"></script>
 
     <script>
@@ -271,6 +276,7 @@ downloads () {
             M.toast({html: message, classes: color})
         }
     </script>
+    
 </body>
 
 </html>
