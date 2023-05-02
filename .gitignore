@@ -1,4 +1,5 @@
 uploads/*
+uploads/tmp/*
 *.pem
 
 __pycache__
