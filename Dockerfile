@@ -1,12 +1,11 @@
-FROM python:3.11.0a3-alpine3.15
+FROM python:3.9-slim-bullseye
 
-ADD copypasta.py /srv/copypasta.py
+COPY . /opt/copypasta
 
-EXPOSE 8080
+WORKDIR /opt/copypasta
+RUN pip install -r requirements.txt
+RUN openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 3650 -nodes -subj "/C=US/ST=Montana/L=Billings/O=CopyPasta/OU=CopyPastaPasta/CN=CopyPastaPastaPasta"
 
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir web.py jinja2
+EXPOSE 443
 
-WORKDIR "/srv/"
-
-CMD ["python3", "/srv/copypasta.py"]
+CMD ["gunicorn", "-w", "4", "--keyfile", "key.pem", "--certfile", "cert.pem", "-b", "0.0.0.0:443", "'copypasta:app'"]
