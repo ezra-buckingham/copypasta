@@ -11,6 +11,15 @@ def sizeof_fmt(num, suffix="B"):
     return f"{num:.1f} Yi{suffix}"
 
 
+def delete_files_in_dir(path: Path):
+    
+    for file in path.glob('*'):
+        # If a directory, move on
+        if Path(file).is_dir(): continue
+        
+        file.unlink()
+
+
 def get_files(path: Path):
 
     files = []

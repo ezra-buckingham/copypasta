@@ -41,6 +41,23 @@
     table.striped>tbody>tr:nth-child(odd) {
         background-color: rgba(46, 50, 50, 255)
     }
+
+    .delete-all {
+        margin-top: 10px;
+    }
+
+    .modal-footer > .btn {
+        margin: 0 10px 0 10px !important;
+    }
+
+    .modal-footer {
+        border-top: 1px solid rgba(0,0,0,0.1);
+        border-top-color: rgba(0, 0, 0, 0.1);
+        position: absolute;
+        bottom: 0;
+        padding: 10px !important;
+    }
+
     </style>
     {% endraw %}
 
@@ -60,7 +77,7 @@
             <a data-target="add-text" class="btn-floating btn-large halfway-fab waves-effect waves-light green modal-trigger">
                 <i class="material-icons">note_alt</i>
             </a>
-            <form id="file-upload" action="upload" method="post" enctype="multipart/form-data">
+            <form id="file-upload" action="upload/file" method="post" enctype="multipart/form-data">
                 <span style="margin-right: -70px;" class="btn-floating btn-large halfway-fab waves-effect waves-light blue btn-file">
                     <i class="material-icons">attach_file</i>
                     <input id="file" type="file" name="upload" multiple>
@@ -73,28 +90,26 @@
     <div class="container">
 
         <div id="add-text" class="modal">
-            <div class="modal-content">
-                <h4>Add Content</h4>
-                <div class="col s8">
-                    <form id="text-submit" action="./index" method="post">
-                        <div class="input-field">
-                            <textarea class="materialize-textarea" id="text-content" name="text" rows="5" cols="30">{{ text }}</textarea>
-                            <label for="text">Your content here...</label>
+            <form id="text-submit" action="upload/text" method="post">
+                <div class="modal-content">
+                    <h4>Add Content</h4>
+                    <div class="row">
+                        <div class="col s12">
+                            <div class="input-field">
+                                <textarea class="materialize-textarea" id="text-content" name="text" rows="5" cols="30">{{ text }}</textarea>
+                                <label for="text">Your content here...</label>
+                            </div>
                         </div>
-                        <div class="row">
-                            <button class="waves-effect waves-light btn center blue" name="paste" id="paste-clipboard" type="button" onclick="pasteContent()" 
-                                title="Paste text to this input area"><i class="material-icons left">content_paste</i>Paste Clipboard</button>
-                            <button class="waves-effect waves-light btn center green" name="save_text" type="submit"
-                                title="Save pasted text as a file available for download"><i class="material-icons left">feed</i>Save as Text</button>
-                            <button class="waves-effect waves-light btn center teal" name="save_b64" type="submit"
-                                title="Save a base64-encoded blob as a file available for download"><i class="material-icons left">data_object</i>Save as B64</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
-            </div>
+                <div class="modal-footer">
+                    <button class="waves-effect waves-light btn center green" name="save_text" type="submit"
+                        title="Save pasted text as a file available for download"><i class="material-icons left">feed</i>Save as Text</button>
+                    <button class="waves-effect waves-light btn center blue" name="save_b64" type="submit"
+                        title="Save a base64-encoded blob as a file available for download"><i class="material-icons left">data_object</i>Save as Base64</button>
+                    <a href="/" class="waves-effect waves-light btn center red modal-close"><i class="material-icons left">close</i>Exit</a>
+                </div>
+            </form>
         </div>
     
 
@@ -127,6 +142,13 @@
                 </tr>
                 {% endfor %}
             </table>
+            <div class="row delete-all">
+                <div class="col s12">
+                    <a href="/deleteall" class="btn waves-effect red right" onclick="return confirm('Are you sure you want to delete all files?')">
+                        <i class="material-icons left">delete_forever</i>Delete All
+                    </a>
+                </div>
+            </div>
             {% endif %}
         </div>
 
@@ -135,11 +157,11 @@
             <p>Some helper functions for you</p>
 
             <h4>Curl Upload</h4>
-            <pre>curl -F text="your text here" {{ host }}</pre>
-            <pre>curl -F text="$(cat file.txt)" {{ host }}</pre>
+            <pre>curl -F text="your text here" {{ host }}/upload/text</pre>
+            <pre>curl -F text="$(cat file.txt)" {{ host }}/upload/text</pre>
 
             <h4>Curl Download</h4>
-            <pre>curl {{ host }}/&lt;index&gt; -L -o &lt;filename&gt;</pre>
+            <pre>curl {{ host }}/get/<filename> -L -o &lt;filename&gt;</pre>
 
             <h4>Copy Content</h4>
             <pre>curl {{ host }}/clipboard | xclip -selection clipboard</pre>

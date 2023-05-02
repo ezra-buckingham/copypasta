@@ -1,11 +1,9 @@
-import base64
-import os
 from pathlib import Path
-from OpenSSL import crypto, SSL
+from datetime import datetime
 
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 
-from core import get_files
+from core import get_files, delete_files_in_dir
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = Path('uploads')
@@ -27,28 +25,62 @@ def index():
 
 
 # Upload files
-@app.route('/upload', methods=['POST'])
+@app.route('/upload/file', methods=['POST'])
 def upload_files():
-    files = request.files.getlist('file')
+    files = request.files.getlist('upload')
     filenames = []
     for file in files:
         if file:
             filename = file.filename
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file_location = Path(app.config['UPLOAD_FOLDER']).joinpath(filename)
+            # If a file exists by that name
+            if file_location.exists(): continue
+            file.save(file_location)
             filenames.append(filename)
     if filenames:
         return redirect(url_for('index', action='upload', status='success'))
     else:
         return redirect(url_for('index', action='upload', status='failure'))
     
+# Upload text
+@app.route('/upload/text', methods=['POST'])
+def upload_text():
+    text = request.form.get('text')
+    
+    try:
+        if text:
+            filename = datetime.now().strftime('%d%b%Y_%H%M%S.txt')
+            new_file = Path(app.config['UPLOAD_FOLDER']).joinpath(filename)
+            new_file.write_text(text)
+            return redirect(url_for('index', action='upload', status='success'))
+    except:
+        return redirect(url_for('index', action='upload', status='failure'))
+
 
 # Delete file
 @app.route('/delete/<file>', methods=['GET'])
 def delete_file(file):
+    
     file = Path(app.config['UPLOAD_FOLDER']).joinpath(file)
     
-    if file.exists(): file.unlink()
-    return redirect(url_for('index', action='delete', status='success'))
+    try:
+        if file.exists(): file.unlink()
+        return redirect(url_for('index', action='delete', status='success'))
+    except:
+        return redirect(url_for('index', action='delete', status='failure'))
+
+
+# Delete file
+@app.route('/deleteall', methods=['GET'])
+def delete_all_files():
+    
+    uploads = Path(app.config['UPLOAD_FOLDER'])
+    
+    try:
+        delete_files_in_dir(uploads)
+        return redirect(url_for('index', action='delete', status='success'))
+    except:
+        return redirect(url_for('index', action='delete', status='failure'))
 
 
 # Get files
@@ -58,7 +90,6 @@ def get_file(file):
     get_type = request.args.get('type')
     
     file = Path(app.config['UPLOAD_FOLDER']).joinpath(file)
-    
     
     if get_type == 'raw':
         return send_from_directory(directory=app.config['UPLOAD_FOLDER'], path=file.name)
@@ -76,5 +107,4 @@ def get_file(file):
 
 
 if __name__ == '__main__':
-    app.run()
-    
+    app.run(port=5000)
