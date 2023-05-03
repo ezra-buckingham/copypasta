@@ -8,4 +8,4 @@ RUN openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -da
 
 EXPOSE 443
 
-CMD ["gunicorn", "-w", "4", "--keyfile", "key.pem", "--certfile", "cert.pem", "-b", "0.0.0.0:443", "'copypasta:app'"]
+CMD ["gunicorn", "-w", "4", "--keyfile", "key.pem", "--certfile", "cert.pem", "-b", "'0.0.0.0:443'", "copypasta:app"]
