@@ -10,5 +10,5 @@ Copying and pasting when you use VMs is awful, go deploy this in a container and
 ## Usage
 
 ```
-docker run -d -p 443:443 -v "/copypasta/clipboard:/srv/clipboard -v "/opt/copypasta:/opt/copypasta/uploads" copypasta:latest
+docker run --name copypasta -d -p 443:443 -v "/opt/copypasta:/opt/copypasta/uploads" copypasta
 ```
