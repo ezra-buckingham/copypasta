@@ -92,10 +92,8 @@ def get_file(file):
     get_type = request.args.get('type')
     
     file = Path(app.config['UPLOAD_FOLDER']).joinpath(file)
-    
-    if get_type == 'raw':
-        return send_from_directory(directory=Path(app.config['UPLOAD_FOLDER']), path=file.name)
-    elif get_type == 'b64':
+        
+    if get_type == 'b64':
         # Create / Get temp directory to generate the B64 file
         temp_directory = Path(app.config['UPLOAD_FOLDER']).joinpath('tmp')
         if not temp_directory.exists(): temp_directory.mkdir()
@@ -105,7 +103,7 @@ def get_file(file):
         
         return send_from_directory(directory=temp_directory, path=b64_file.name)
     
-    return b'Please provide the type parameter'
+    return send_from_directory(directory=Path(app.config['UPLOAD_FOLDER']), path=file.name)
 
 
 if __name__ == '__main__':

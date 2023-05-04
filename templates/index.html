@@ -128,6 +128,7 @@
                         <th class="center">Download</th>
                         <th class="center">Preview</th>
                         <th class="center">To Base64</th>
+                        <th class="center">Curl Command</th>
                         <th>Size</th>
                         <th>Date</th>
                         <th>MD5</th>
@@ -139,7 +140,8 @@
                     <td><pre>{{ file[0] }}</pre></td>
                     <td class="center"><a class="btn btn-floating waves-effect blue" href="get/{{ file[0] }}?type=raw" download> <i class="material-icons">download</i></a></td>
                     <td class="center"><a class="btn btn-floating waves-effect green" href="get/{{ file[0] }}?type=raw"><i class="material-icons">visibility</i></a></td>
-                    <td class="center"><a class="btn btn-floating waves-effect yellow" href="get/{{ file[0] }}?type=b64"><i class="material-icons">code</i></a></td>
+                    <td class="center"><a class="btn btn-floating waves-effect orange" href="get/{{ file[0] }}?type=b64"><i class="material-icons">code</i></a></td>
+                    <td class="center"><button class="btn btn-floating waves-effect purple" onclick="copyCurlCommand('{{ file[0] }}')"><i class="material-icons">terminal</i></a></td>
                     <td>{{ file[1] }}</td>
                     <td>{{ file[2] }}</td>
                     <td><pre>{{ file[3] }}</pre></td>
@@ -246,6 +248,21 @@ downloads () {
             var action_btn_obj = M.FloatingActionButton.init(action_btn, action_btn_options);
         });
 
+    </script>
+
+    <script>
+        function copyCurlCommand(file) {
+
+            command = `curl https://{{ host }}/get/${ file } -k -L -o ${ file }`
+      
+            try {
+                navigator.clipboard.writeText(command);
+                M.toast({html: 'Curl command copied to clipboard', classes: 'green'})
+            } catch {
+                M.toast({html: 'Curl command failed to copy to clipboard', classes: 'red'})
+            }
+
+        }
     </script>
 
     <script>
