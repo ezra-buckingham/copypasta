@@ -28,20 +28,22 @@ def index():
 @app.route('/upload/file', methods=['POST'])
 def upload_files():
     files = request.files.getlist('upload')
-    filenames = []
-    for file in files:
-        if file:
-            filename = file.filename
-            file_location = Path(app.config['UPLOAD_FOLDER']).joinpath(filename)
-            # If a file exists by that name
-            if file_location.exists(): continue
-            file.save(file_location)
-            filenames.append(filename)
-    if filenames:
-        return redirect(url_for('index', action='upload', status='success'))
-    else:
-        return redirect(url_for('index', action='upload', status='failure'))
     
+    try:
+        filenames = []
+        for file in files:
+            if file:
+                filename = file.filename
+                file_location = Path(app.config['UPLOAD_FOLDER']).joinpath(filename)
+                # If a file exists by that name
+                if file_location.exists(): file_location.unlink()
+                file.save(file_location)
+                filenames.append(filename)
+        return redirect(url_for('index', action='upload', status='success'))
+    except:
+        return redirect(url_for('index', action='upload', status='failure'))
+        
+        
 # Upload text
 @app.route('/upload/text', methods=['POST'])
 def upload_text():
@@ -92,7 +94,7 @@ def get_file(file):
     file = Path(app.config['UPLOAD_FOLDER']).joinpath(file)
     
     if get_type == 'raw':
-        return send_from_directory(directory=app.config['UPLOAD_FOLDER'], path=file.name)
+        return send_from_directory(directory=Path(app.config['UPLOAD_FOLDER']), path=file.name)
     elif get_type == 'b64':
         # Create / Get temp directory to generate the B64 file
         temp_directory = Path(app.config['UPLOAD_FOLDER']).joinpath('tmp')
@@ -107,4 +109,4 @@ def get_file(file):
 
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(host='0.0.0.0', port=5000)
