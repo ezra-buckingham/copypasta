@@ -4,9 +4,11 @@ import click
 from pathlib import Path
 
 DEFAULT_SLEEP = 5.0
+DEFAULT_DELAY = 0.0
 
 # variables to control actions
 configured_sleep = DEFAULT_SLEEP
+configured_delay = DEFAULT_DELAY
 content = ""
 
 
@@ -16,7 +18,7 @@ def send_keystrokes():
     
     try:
         # Write content to text field
-        pyautogui.typewrite(content)
+        pyautogui.typewrite(content, interval=configured_delay)
         
         return True
     except:
@@ -34,12 +36,17 @@ def main():
 @click.option("-f", "--file", type=Path, help="""
     File to write out as text
 """)
-def cli(sleep, file):
+@click.option("-d", "--delay", type=float, default=0.0, help="""
+    Delay between each keystroke
+""")
+def cli(sleep, file, delay):
     """ CLI for typing a file out """
     global configured_sleep
     global content
+    global configured_delay
     
     configured_sleep = sleep
+    configured_delay = delay
     
     file = Path(file)
     content = file.read_text()
@@ -62,6 +69,13 @@ def ui():
         global configured_sleep
         label_1.configure(text=f"Sleep Time: { value }s")
         configured_sleep = value
+        
+    # The callback function to set sleep time
+    def slider_callback2(value):
+        global configured_delay
+        value = round(value, 1)
+        label_2.configure(text=f"Delay Time: { value }s")
+        configured_delay = value
         
     # The callback function to send the keys
     def button_callback():
@@ -90,6 +104,15 @@ def ui():
     slider_1 = customtkinter.CTkSlider(master=frame_1, command=slider_callback, from_=0, to=25, number_of_steps=25)
     slider_1.pack(pady=10, padx=10)
     slider_1.set(DEFAULT_SLEEP)
+    
+    # Create the label for the delay time
+    label_2 = customtkinter.CTkLabel(master=frame_1, text=f"Delay Time: { DEFAULT_DELAY }s")
+    label_2.pack(pady=10, padx=10)
+
+    # Create the slider for the sleep time
+    slider_2 = customtkinter.CTkSlider(master=frame_1, command=slider_callback2, from_=0, to=1, number_of_steps=10)
+    slider_2.pack(pady=10, padx=10)
+    slider_2.set(DEFAULT_DELAY)
 
     # Create the send button
     button_1 = customtkinter.CTkButton(master=frame_1, text="Send Keys", command=button_callback)
