@@ -73,7 +73,7 @@ def ui():
     # The callback function to set sleep time
     def slider_callback2(value):
         global configured_delay
-        value = round(value, 1)
+        value = round(value, 2)
         label_2.configure(text=f"Delay Time: { value }s")
         configured_delay = value
         
@@ -110,7 +110,7 @@ def ui():
     label_2.pack(pady=10, padx=10)
 
     # Create the slider for the sleep time
-    slider_2 = customtkinter.CTkSlider(master=frame_1, command=slider_callback2, from_=0, to=1, number_of_steps=10)
+    slider_2 = customtkinter.CTkSlider(master=frame_1, command=slider_callback2, from_=0, to=1, number_of_steps=100)
     slider_2.pack(pady=10, padx=10)
     slider_2.set(DEFAULT_DELAY)
 
