@@ -29,12 +29,13 @@ def main():
 
 @main.command()
 @click.option("-s", "--sleep", type=float, default=DEFAULT_SLEEP, help="""
-    Greet the world.
+    Sleep time before typing content
 """)
 @click.option("-f", "--file", type=Path, help="""
-    Add a thematic break
+    File to write out as text
 """)
 def cli(sleep, file):
+    """ CLI for typing a file out """
     global configured_sleep
     global content
     
@@ -48,6 +49,7 @@ def cli(sleep, file):
 
 @main.command()
 def ui():
+    """ Display a UI for pasting in text """
     import customtkinter
     
     # Define the application

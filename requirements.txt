@@ -1,4 +1,7 @@
+click
+customtkinter
 flask
 gunicorn
 pyopenssl
 pyautogui
+tk-tools
