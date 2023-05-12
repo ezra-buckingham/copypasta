@@ -11,6 +11,15 @@
             "program": "${workspaceFolder}/copypasta.py",
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "SendKeys",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/core/type.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["ui"]
         }
     ]
 }
