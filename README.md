@@ -29,6 +29,24 @@ Commands:
   ui   Display a UI for pasting in text
 ```
 
+### UI Use
+
+
+
+### CLI Use
+
+```
+Usage: type.py cli [OPTIONS]
+
+  CLI for typing a file out
+
+Options:
+  -s, --sleep FLOAT  Sleep time before typing content
+  -f, --file PATH    File to write out as text
+  -d, --delay FLOAT  Delay between each keystroke
+  --help             Show this message and exit.
+```
+
 ### Install on MacOS
 
 To use on MacOS, you must enable the "Accessibility" of whatever application you are running this from (if you are running from a terminal in VSCode, you must allow VSCode in your MacOS settings and if you use it from Terminal, you must allow Terminal in your settings).
@@ -47,4 +65,24 @@ And install all pip dependencies:
 
 ```bash
 python3 -m pip3 install -r requirements.txt
+```
+
+## Install from Docker Hub
+
+https://hub.docker.com/r/ezrabuckingham/copypasta
+
+```bash
+docker run -it ezrabuckingham/copypasta:latest
+```
+
+## Developer Notes
+
+Pushing to Docker Hub:
+
+``` bash
+docker login -u ezrabuckingham
+```
+
+```bash
+docker build -t ezrabuckingham/copypasta:latest . && docker push ezrabuckingham/copypasta:latest
 ```
